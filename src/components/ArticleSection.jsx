@@ -1,0 +1,83 @@
+import { Input } from "@/components/ui/input";
+import * as React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import BlogCard from "./BlogCard";
+import { blogPosts } from "../data/blogPost";
+import { useState } from "react";
+
+function ArticleSection() {
+  const [categoryActive, setCategoryActive] = useState("Highlight");
+  const categories = ["Highlight", "Cat", "Inspiration", "General"];
+
+  return (
+    <section className="w-full bg-white md:px-[120px] md:pt-[80px] md:pb-[120px]">
+      <div className="">
+        <h2 className="text-headline-3 md:text-headline-3 text-brown-600 mb-[32px] px-[16px] ">
+          Latest articles
+        </h2>
+      </div>
+      <div className="flex flex-col gap-[16px] bg-brown-200 px-[24px] py-[16px] md:flex-row md:items-center md:justify-between md:rounded-[16px]  ">
+        <div className="hidden md:flex md:flex-wrap md:items-center gap-[8px]">
+          {categories.map((category) => (
+            <button
+              disabled={categoryActive === category}
+              key={category}
+              onClick={() => setCategoryActive(category)}
+              className={`rounded-[8px] md:px-[20px] md:py-[12px] text-body-2 md:text-body-1 text-brown-400  hover:text-brown-500 transition-colors ${
+                categoryActive === category ? "bg-brown-300" : "hover:bg-muted"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+        <div className="relative w-full md:max-w-[380px]">
+          <Input
+            type="email"
+            placeholder="Search"
+            className="bg-white placeholder:text-brown-400 placeholder:text-body-1"
+          />
+        </div>
+        <div className="md:hidden w-full">
+          <p className="text-body-1 text-brown-400">Category</p>
+          <Select value={categoryActive} onValueChange={setCategoryActive}>
+            <SelectTrigger className="w-full md:max-w-[380px] bg-white text-brown-400">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup className="text-brown-400">
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="px-[16px] pt-[24px] pb-[80px] grid grid-cols-1 md:grid-cols-2 gap-x-[20px] gap-y-[48px] ">
+        {blogPosts.map((post) => (
+          <BlogCard
+            key={post.id}
+            image={post.image}
+            category={post.category}
+            title={post.title}
+            description={post.description}
+            author={post.author}
+            date={post.date}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default ArticleSection;
