@@ -9,12 +9,51 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import BlogCard from "./BlogCard";
-import { blogPosts } from "../data/blogPost";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function ArticleSection() {
   const [categoryActive, setCategoryActive] = useState("Highlight");
   const categories = ["Highlight", "Cat", "Inspiration", "General"];
+  const [posts, setPosts] = useState([]); //api data
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1); //pagination
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    const getPosts = async () => {
+      try {
+        const response = await axios.get(
+          `https://blog-post-project-api.vercel.app/posts?page=${page}&limit=6${
+            categoryActive !== "Highlight" ? `&category=${categoryActive}` : "" //fetch ทุก post ถ้าไม่ใช่ highlight
+          }`,
+        );
+        setPosts((prevPosts) =>
+          page === 1
+            ? response.data.posts
+            : [...prevPosts, ...response.data.posts],
+        );
+        console.log(response);
+
+        if (response.data.currentPage >= response.data.totalPages) {
+          setHasMore(false);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getPosts();
+  }, [page, categoryActive]);
+
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
 
   return (
     <section className="w-full bg-white md:px-[120px] md:pt-[80px] md:pb-[120px]">
@@ -40,7 +79,7 @@ function ArticleSection() {
         </div>
         <div className="relative w-full md:max-w-[380px]">
           <Input
-            type="email"
+            type="text"
             placeholder="Search"
             className="bg-white placeholder:text-brown-400 placeholder:text-body-1"
           />
@@ -64,7 +103,7 @@ function ArticleSection() {
         </div>
       </div>
       <div className="px-[16px] pt-[24px] pb-[80px] grid grid-cols-1 md:grid-cols-2 gap-x-[20px] gap-y-[48px] ">
-        {blogPosts.map((post) => (
+        {posts.map((post) => (
           <BlogCard
             key={post.id}
             image={post.image}
@@ -76,6 +115,16 @@ function ArticleSection() {
           />
         ))}
       </div>
+      {hasMore && (
+        <div className="flex justify-center">
+          <button
+            className="cursor-pointer disabled:opacity-50"
+            onClick={handleLoadMore}
+          >
+            {isLoading ? "Loading..." : "View more"}
+          </button>
+        </div>
+      )}
     </section>
   );
 }
