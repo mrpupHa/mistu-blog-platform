@@ -1,20 +1,21 @@
 import "./App.css";
-import Navbar from "./components/Navbar";
-import Hero from "./components/HeroSection";
-import Footer from "./components/Footer";
-import ArticleSection from "./components/ArticleSection";
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import ViewPostPage from "./pages/ViewPostPage";
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="">
-        <Hero />
-        <ArticleSection />
+    <>
+      <div>
+        <Router>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/post/:postId" element={<ViewPostPage />} />
+          </Routes>
+        </Router>
       </div>
-
-      <Footer />
-    </div>
+    </>
   );
 }
 
