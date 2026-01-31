@@ -9,9 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import BlogCard from "./BlogCard";
-
+import { format } from "date-fns";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import authorImage from "../assets/images/tourist.jpg";
 
 function ArticleSection() {
   const [categoryActive, setCategoryActive] = useState("Highlight");
@@ -20,6 +21,7 @@ function ArticleSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1); //pagination
   const [hasMore, setHasMore] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
 
   const getPosts = async () => {
     setIsLoading(true);
@@ -53,8 +55,9 @@ function ArticleSection() {
     setPage((prevPage) => prevPage + 1);
   };
 
-  const handleCategorySelectionChange = (value) => {
+  const handleCategoryChange = (value) => {
     setCategoryActive(value);
+    setPosts([]);
     setPage(1);
     setHasMore(true);
   };
@@ -72,7 +75,7 @@ function ArticleSection() {
             <button
               disabled={categoryActive === category}
               key={category}
-              onClick={() => setCategoryActive(category)}
+              onClick={() => handleCategoryChange(category)}
               className={`rounded-[8px] md:px-[20px] md:py-[12px] text-body-2 md:text-body-1 text-brown-400  hover:text-brown-500 transition-colors ${
                 categoryActive === category ? "bg-brown-300" : "hover:bg-muted"
               }`}
@@ -86,13 +89,15 @@ function ArticleSection() {
             type="text"
             placeholder="Search"
             className="bg-white placeholder:text-brown-400 placeholder:text-body-1"
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.target.value)}
           />
         </div>
         <div className="md:hidden w-full">
           <p className="text-body-1 text-brown-400">Category</p>
           <Select
-            value={categoryActive}
-            onValueChange={handleCategorySelectionChange}
+            value={handleCategoryChange}
+            onValueChange={handleCategoryChange}
           >
             <SelectTrigger className="w-full md:max-w-[380px] bg-white text-brown-400">
               <SelectValue placeholder="Select category" />
@@ -119,14 +124,15 @@ function ArticleSection() {
             title={post.title}
             description={post.description}
             author={post.author}
-            date={post.date}
+            authorImage={authorImage}
+            date={format(new Date(post.date), "dd MMMM yyyy")}
           />
         ))}
       </div>
       {hasMore && (
         <div className="flex justify-center">
           <button
-            className="cursor-pointer disabled:opacity-50"
+            className="cursor-pointer disabled:opacity-50 underline"
             onClick={handleLoadMore}
           >
             {isLoading ? "Loading..." : "View more"}
