@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import authorImage from "../assets/images/tourist.jpg";
+import { useNavigate } from "react-router-dom";
 
 function ArticleSection() {
   const [categoryActive, setCategoryActive] = useState("Highlight");
@@ -22,6 +23,9 @@ function ArticleSection() {
   const [page, setPage] = useState(1); //pagination
   const [hasMore, setHasMore] = useState(true);
   const [searchValue, setSearchValue] = useState("");
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
 
   const getPosts = async () => {
     setIsLoading(true);
@@ -50,6 +54,21 @@ function ArticleSection() {
   useEffect(() => {
     getPosts();
   }, [page, categoryActive]);
+
+  useEffect(() => {
+    if (searchValue.trim() === "") {
+      setFilteredPosts([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    const result = posts.filter((post) =>
+      post.title.toLowerCase().includes(searchValue.toLowerCase()),
+    );
+
+    setFilteredPosts(result);
+    setShowDropdown(true);
+  }, [searchValue, posts]);
 
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
@@ -91,7 +110,22 @@ function ArticleSection() {
             className="bg-white placeholder:text-brown-400 placeholder:text-body-1"
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
+            onFocus={() => searchValue && setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           />
+          {showDropdown && filteredPosts.length > 0 && (
+            <div className="absolute z-50 mt-2 w-full rounded-[12px] bg-white shadow-lg border">
+              {filteredPosts.slice(0, 5).map((post) => (
+                <div
+                  key={post.id}
+                  className="px-4 py-3 cursor-pointer hover:bg-brown-100 text-body-2 text-brown-500"
+                  onClick={() => navigate(`/post/${post.id}`)}
+                >
+                  {post.title}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="md:hidden w-full">
           <p className="text-body-1 text-brown-400">Category</p>
