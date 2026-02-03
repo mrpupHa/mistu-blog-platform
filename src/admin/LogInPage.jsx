@@ -1,13 +1,7 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
-import { Link } from "react-router-dom";
-import { useState } from "react";
 
-function LogIn() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
+function LogInPage() {
   return (
     <>
       <Navbar />
@@ -62,4 +56,4 @@ function LogIn() {
   );
 }
 
-export default LogIn;
+export default LogInPage;
