@@ -7,7 +7,7 @@ import { Toaster } from "react-hot-toast";
 import HealthTestPage from "./pages/HealthTestPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import SignUp from "./admin/SignUpPage";
-import LoginPage from "./admin/LogInPage";
+import LogInPage from "./admin/LogInPage";
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
             <Route path="/test-health" element={<HealthTestPage />} />
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/login" element={<LogInPage />} />
           </Routes>
         </Router>
         <Toaster position="bottom-right" />
