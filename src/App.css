@@ -39,3 +39,20 @@
 .read-the-docs {
   color: #888;
 }
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #efe7e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b5e3c;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.social-icon:hover {
+  background-color: #e4d5cc;
+}
