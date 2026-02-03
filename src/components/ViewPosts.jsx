@@ -19,6 +19,7 @@ import facebook from "../assets/images/facebook.png";
 import linkedIn from "../assets/images/linkedin.png";
 import twitter from "../assets/images/twitter.png";
 import authorImage from "../assets/images/tourist.jpg";
+import { Link } from "react-router-dom";
 
 function ViewPost() {
   const { postId } = useParams();
@@ -93,14 +94,48 @@ function ViewPost() {
                 <ReactMarkdown>{content}</ReactMarkdown>
               </div>
             </div>
-            <div className="flex flex-col p-[16px] m- md:flex-row w-full bg-brown-200 gap-[24px]">
+            <div className="flex flex-col p-[16px] m- md:flex-row md:justify-between w-full bg-brown-200 gap-[24px] md:rounded-2xl">
               <div>
-                <button className="flex items-center justify-center w-full h-[48px] gap-[8px] bg-white rounded-full border border-brown-400 cursor-pointer hover:bg-brown-200 active:bg-brown-300">
-                  <SmilePlus />
-                  {likes}
-                </button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className="flex items-center justify-center w-full h-[48px] gap-[8px] px-[40px] py-[12px] bg-white rounded-full border border-brown-400 cursor-pointer hover:bg-brown-200 active:bg-brown-300">
+                      <SmilePlus />
+                      {likes}
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="max-w-[420px] rounded-2xl px-8 py-10">
+                    <AlertDialogCancel className="absolute right-4 top-4 border-none p-0 h-auto cursor-pointer">
+                      ✕
+                    </AlertDialogCancel>
+                    <div className="flex flex-col items-center text-center gap-6">
+                      <AlertDialogTitle className="text-2xl font-semibold">
+                        Create an account to{" "}
+                        <span>
+                          <br></br>
+                        </span>
+                        continue
+                      </AlertDialogTitle>
+                      <AlertDialogAction asChild>
+                        <Link
+                          to="/signup"
+                          className="bg-black text-white rounded-full px-8 py-3 hover:bg-brown-600 cursor-pointer text-center"
+                        >
+                          Create account
+                        </Link>
+                      </AlertDialogAction>
+                      <p className="text-sm text-gray-500">
+                        Already have an account?{" "}
+                        <Link to="/login">
+                          <span className="text-black font-medium cursor-pointer hover:underline cursor-pointer">
+                            Login
+                          </span>
+                        </Link>
+                      </p>
+                    </div>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
-              <div className="flex items-center gap-[8px]">
+              <div className="flex justify-center items-center gap-[8px]">
                 <button
                   className="inline-flex bg-white rounded-full gap-[6px] px-[40px] py-[12px] border border-brown-400 cursor-pointer hover:bg-brown-200 active:bg-brown-300"
                   onClick={() => {
@@ -117,7 +152,7 @@ function ViewPost() {
                     );
                   }}
                 >
-                  <Copy className="text-brown-400wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww" />
+                  <Copy className="text-brown-400" />
                   <p>Copy Link</p>
                 </button>
                 <a
@@ -164,14 +199,21 @@ function ViewPost() {
                         </span>
                         continue
                       </AlertDialogTitle>
-                      <AlertDialogAction className="bg-black text-white rounded-full px-8 py-3 hover:bg-black/90 cursor-pointer">
-                        Create account
+                      <AlertDialogAction asChild>
+                        <Link
+                          to="/signup"
+                          className="bg-black text-white rounded-full px-8 py-3 hover:bg-brown-600 cursor-pointer text-center"
+                        >
+                          Create account
+                        </Link>
                       </AlertDialogAction>
                       <p className="text-sm text-gray-500">
                         Already have an account?{" "}
-                        <span className="text-black font-medium cursor-pointer hover:underline cursor-pointer">
-                          Login
-                        </span>
+                        <Link to="/login">
+                          <span className="text-black font-medium cursor-pointer hover:underline cursor-pointer">
+                            Login
+                          </span>
+                        </Link>
                       </p>
                     </div>
                   </AlertDialogContent>
