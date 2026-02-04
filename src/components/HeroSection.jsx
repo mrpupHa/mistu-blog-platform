@@ -1,6 +1,6 @@
 import tourist from "../assets/images/tourist.jpg";
 
-function Hero() {
+function HeroSection() {
   return (
     <section className="w-full md:px-[120px] px-[16px] py-[40px] gap-[40px] md:pt-[60px] md:gap-[80px] font-sans">
       <div className="flex flex-col gap-[40px] md:flex-row md:gap-[60px] md:items-center">
@@ -50,4 +50,4 @@ function Hero() {
   );
 }
 
-export default Hero;
+export default HeroSection;

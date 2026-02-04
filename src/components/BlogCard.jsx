@@ -1,7 +1,13 @@
+import { useNavigate } from "react-router-dom";
+
 function BlogCard(props) {
+  const navigate = useNavigate();
   return (
-    <div className="flex flex-col gap-4">
-      <a href="#" className="relative h-[212px] sm:h-[360px]">
+    <div
+      className="flex flex-col gap-4"
+      onClick={() => navigate(`/post/${props.id}`)}
+    >
+      <a href="" className="relative h-[212px] sm:h-[360px]">
         <img
           className="w-full h-full object-cover rounded-md"
           src={props.image}
@@ -14,7 +20,7 @@ function BlogCard(props) {
             {props.category}
           </span>
         </div>
-        <a href="#">
+        <a href="">
           <h2 className="text-start font-bold text-xl mb-2 line-clamp-2 hover:underline">
             {props.title}
           </h2>

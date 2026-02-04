@@ -9,17 +9,82 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import BlogCard from "./BlogCard";
-import { blogPosts } from "../data/blogPost";
-import { useState } from "react";
+import { format } from "date-fns";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import authorImage from "../assets/images/tourist.jpg";
+import { useNavigate } from "react-router-dom";
 
 function ArticleSection() {
   const [categoryActive, setCategoryActive] = useState("Highlight");
   const categories = ["Highlight", "Cat", "Inspiration", "General"];
+  const [posts, setPosts] = useState([]); //api data
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1); //pagination
+  const [hasMore, setHasMore] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
+
+  const getPosts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `https://blog-post-project-api.vercel.app/posts?page=${page}&limit=6${
+          categoryActive !== "Highlight" ? `&category=${categoryActive}` : "" //fetch ทุก post ถ้าไม่ใช่ highlight
+        }`,
+      );
+      setPosts((prevPosts) =>
+        page === 1
+          ? response.data.posts
+          : [...prevPosts, ...response.data.posts],
+      );
+      console.log(response);
+
+      if (response.data.currentPage >= response.data.totalPages) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    getPosts();
+  }, [page, categoryActive]);
+
+  useEffect(() => {
+    if (searchValue.trim() === "") {
+      setFilteredPosts([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    const result = posts.filter((post) =>
+      post.title.toLowerCase().includes(searchValue.toLowerCase()),
+    );
+
+    setFilteredPosts(result);
+    setShowDropdown(true);
+  }, [searchValue, posts]);
+
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+
+  const handleCategoryChange = (value) => {
+    setCategoryActive(value);
+    setPosts([]);
+    setPage(1);
+    setHasMore(true);
+  };
 
   return (
-    <section className="w-full bg-white md:px-[120px] md:pt-[80px] md:pb-[120px]">
+    <section className="w-full bg-white pb-[80px] md:px-[120px] md:pt-[80px] md:pb-[120px]">
       <div className="">
-        <h2 className="text-headline-3 md:text-headline-3 text-brown-600 mb-[32px] px-[16px] ">
+        <h2 className="text-headline-3 md:text-headline-3 text-brown-600 mb-[32px] px-[16px] md:px-0">
           Latest articles
         </h2>
       </div>
@@ -29,7 +94,7 @@ function ArticleSection() {
             <button
               disabled={categoryActive === category}
               key={category}
-              onClick={() => setCategoryActive(category)}
+              onClick={() => handleCategoryChange(category)}
               className={`rounded-[8px] md:px-[20px] md:py-[12px] text-body-2 md:text-body-1 text-brown-400  hover:text-brown-500 transition-colors ${
                 categoryActive === category ? "bg-brown-300" : "hover:bg-muted"
               }`}
@@ -40,14 +105,34 @@ function ArticleSection() {
         </div>
         <div className="relative w-full md:max-w-[380px]">
           <Input
-            type="email"
+            type="text"
             placeholder="Search"
             className="bg-white placeholder:text-brown-400 placeholder:text-body-1"
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.target.value)}
+            onFocus={() => searchValue && setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           />
+          {showDropdown && filteredPosts.length > 0 && (
+            <div className="absolute z-50 mt-2 w-full rounded-[12px] bg-white shadow-lg border">
+              {filteredPosts.slice(0, 5).map((post) => (
+                <div
+                  key={post.id}
+                  className="px-4 py-3 cursor-pointer hover:bg-brown-100 text-body-2 text-brown-500"
+                  onClick={() => navigate(`/post/${post.id}`)}
+                >
+                  {post.title}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="md:hidden w-full">
           <p className="text-body-1 text-brown-400">Category</p>
-          <Select value={categoryActive} onValueChange={setCategoryActive}>
+          <Select
+            value={handleCategoryChange}
+            onValueChange={handleCategoryChange}
+          >
             <SelectTrigger className="w-full md:max-w-[380px] bg-white text-brown-400">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
@@ -63,19 +148,31 @@ function ArticleSection() {
           </Select>
         </div>
       </div>
-      <div className="px-[16px] pt-[24px] pb-[80px] grid grid-cols-1 md:grid-cols-2 gap-x-[20px] gap-y-[48px] ">
-        {blogPosts.map((post) => (
+      <div className="px-[16px] pt-[24px] pb-[80px] md:px-0 grid grid-cols-1 md:grid-cols-2 gap-x-[20px] gap-y-[48px] ">
+        {posts.map((post) => (
           <BlogCard
             key={post.id}
+            id={post.id}
             image={post.image}
             category={post.category}
             title={post.title}
             description={post.description}
             author={post.author}
-            date={post.date}
+            authorImage={authorImage}
+            date={format(new Date(post.date), "dd MMMM yyyy")}
           />
         ))}
       </div>
+      {hasMore && (
+        <div className="flex justify-center">
+          <button
+            className="cursor-pointer disabled:opacity-50 underline"
+            onClick={handleLoadMore}
+          >
+            {isLoading ? "Loading..." : "View more"}
+          </button>
+        </div>
+      )}
     </section>
   );
 }
